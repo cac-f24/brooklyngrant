@@ -8,6 +8,13 @@ import random
 # any pair of nodes
 def generateRandomGraph(num_nodes=10, edge_prob=0.3):
     G = nx.gnp_random_graph(num_nodes, edge_prob, seed=random.randint(1, 100))
+    
+    # make sure all nodes have at least one edge
+    for node in G.nodes:
+        if G.degree[node] == 0:
+            target = random.choice([n for n in G.nodes if n != node]) # pick random node
+            G.add_edge(node, target) #add edge
+    
     return G
 
 # Main
