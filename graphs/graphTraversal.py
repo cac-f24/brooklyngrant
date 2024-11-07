@@ -1,18 +1,25 @@
+import argparse
 import networkx as nx
 import matplotlib.pyplot as plt
-from generatingRandomGraph import generateRandomGraph
+from graphGenerator import generateUnweightedGraph
 import random
 
+## Graph traversal algorithm BFS
 def bfsTraversal(G, start):
     bfs_traversal = list(nx.bfs_edges(G, start))
     return bfs_traversal
 
+## Graph traversal algorithm DFS
 def dfsTraversal(G, start):
     dfs_traversal = list(nx.dfs_edges(G, start))
     return dfs_traversal
 
 # Main
-G = generateRandomGraph()
+parser = argparse.ArgumentParser(description="Graph Traversal in Unweighted Graph")
+parser.add_argument("--directed", action="store_true", help="Generate a directed graph")
+args = parser.parse_args()
+
+G = generateUnweightedGraph(directed=args.directed)
 startNode = random.choice(list(G.nodes)) # randomly choose starting for now
 
 # BFS traversal
@@ -23,23 +30,21 @@ print(f"BFS starting from node {startNode}: {bfsEdges}")
 dfsEdges = dfsTraversal(G, startNode)
 print(f"DFS starting from node {startNode}: {dfsEdges}")
 
-# Plotting the graph
-plt.figure(figsize=(10, 6))
 
-# Positions for all nodes
+# Plotting
+fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(14, 6))  # Two subplots in one row
+
+# Positions for all nodes (use the same layout for both subplots)
 pos = nx.spring_layout(G)
 
-# Draw the graph with all edges
-nx.draw(G, pos, with_labels=True, node_color="lightblue", edge_color="gray", node_size=500, font_size=10)
+# BFS traversal plot
+nx.draw(G, pos, ax=ax1, with_labels=True, node_color="lightblue", edge_color="gray", node_size=500, font_size=10)
+nx.draw_networkx_edges(G, pos, edgelist=bfsEdges, edge_color="blue", width=2, style="dashed", ax=ax1)
+ax1.set_title(f"BFS Traversal Starting from Node {startNode}")
 
-# Highlight BFS traversal edges in blue
-nx.draw_networkx_edges(G, pos, edgelist=bfsEdges, edge_color="blue", width=2, style="dashed", label="BFS")
+# DFS traversal plot
+nx.draw(G, pos, ax=ax2, with_labels=True, node_color="lightblue", edge_color="gray", node_size=500, font_size=10)
+nx.draw_networkx_edges(G, pos, edgelist=dfsEdges, edge_color="green", width=2, style="solid", ax=ax2)
+ax2.set_title(f"DFS Traversal Starting from Node {startNode}")
 
-# Highlight DFS traversal edges in green
-nx.draw_networkx_edges(G, pos, edgelist=dfsEdges, edge_color="green", width=2, style="solid", label="DFS")
-
-# Add a legend to show which color represents which traversal
-plt.legend(["BFS (dashed)", "DFS (solid)"])
-
-plt.title(f"Graph Traversal Starting from Node {startNode}")
 plt.show()
